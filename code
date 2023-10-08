@@ -1,0 +1,91 @@
+# Python Web Application using HTML/CSS
+
+import http.server
+import socketserver
+
+# Define the HTML content
+html_content = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Web App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Web App</h1>
+    </header>
+    <main>
+        <section>
+            <h2>About</h2>
+            <p>This is a simple web application.</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 My Web App</p>
+    </footer>
+</body>
+</html>
+"""
+
+# Define the CSS content
+css_content = """
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+"""
+
+# Create a custom request handler to serve HTML and CSS files
+class CustomHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(html_content.encode('utf-8'))
+        elif self.path == '/styles.css':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/css')
+            self.end_headers()
+            self.wfile.write(css_content.encode('utf-8'))
+        else:
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write(b'404 - Not Found')
+
+# Create an HTTP server with the custom request handler
+with socketserver.TCPServer(('', 8000), CustomHandler) as httpd:
+    print('Server started on port 8000...')
+    httpd.serve_forever()
